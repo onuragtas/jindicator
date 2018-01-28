@@ -1,0 +1,13 @@
+#!/usr/bin/env python
+
+import gtk
+from jindicator.indicator import *
+
+if __name__ == '__main__':
+	gtk.gdk.threads_init()
+	gtk.gdk.threads_enter()
+
+	syspeek = Indicator()
+
+	gtk.main()
+	gtk.gdk.threads_leave()

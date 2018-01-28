@@ -1,20 +1,3 @@
-#
-#    Copyright (C) 2011  Georg Schmidl <georg.schmidl@vicox.net>
-#
-#    This program is free software: you can redistribute it and/or modify
-#    it under the terms of the GNU General Public License as published by
-#    the Free Software Foundation, either version 3 of the License, or
-#    (at your option) any later version.
-#
-#    This program is distributed in the hope that it will be useful,
-#    but WITHOUT ANY WARRANTY; without even the implied warranty of
-#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#    GNU General Public License for more details.
-#
-#    You should have received a copy of the GNU General Public License
-#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
-#
-
 from gi.repository import GObject as gobject
 import os
 import threading
@@ -73,6 +56,19 @@ class CpuSupplier(Supplier):
 
 		self.last_total = total
 		self.last_busy = busy
+
+class TemperatureSupplier(Supplier):
+	last_total = 0
+	last_busy = 0
+
+	IDLE = 3
+
+	def supply(self):
+		f = open('/sys/class/thermal/thermal_zone0/temp', 'r')
+		line = f.readline()
+		f.close()
+
+		gobject.idle_add(self.display.update_temp, int(line)/1000)
 
 class MemSwapSupplier(Supplier):
 	def supply(self):

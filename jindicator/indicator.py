@@ -19,6 +19,7 @@ class Indicator():
     active_suppliers = []
 
     LABEL_CPU = _('CPU') + ': {:.1f}%'
+    LABEL_TEMP = '{:.1f} C'
     LABEL_MEMORY = _('Mem') + ': {} ' + _('/') + ' {}'
     LABEL_SWAP = _('Swap') + ': {} ' + _('of') + ' {}'
     LABEL_DISK = _('Disk') + ': {} ' + _('of') + ' {}'
@@ -40,6 +41,7 @@ class Indicator():
         self.app = 'jindicator'
         self.net = "jnet"
         self.mem = "jmem"
+        self.temp = "jtemp"
         iconpath = os.path.abspath("j.png")
 
         self.indicator = AppIndicator3.Indicator.new(
@@ -56,13 +58,19 @@ class Indicator():
             self.mem, iconpath, AppIndicator3.IndicatorCategory.OTHER)
         self.indicator_mem.set_status(AppIndicator3.IndicatorStatus.ACTIVE)
         self.indicator_mem.set_menu(self.create_menu())
+        
+        self.indicator_temp = AppIndicator3.Indicator.new(
+            self.temp, iconpath, AppIndicator3.IndicatorCategory.OTHER)
+        self.indicator_temp.set_status(AppIndicator3.IndicatorStatus.ACTIVE)
+        self.indicator_temp.set_menu(self.create_menu())
 
         self.suppliers['cpu'] = CpuSupplier(self)
         self.suppliers['memswap'] = MemSwapSupplier(self, 2)
         self.suppliers['disk'] = DiskSupplier(self, 2)
         self.suppliers['network'] = NetworkSupplier(self)
+        self.suppliers['temperature'] = TemperatureSupplier(self)
 
-        self.active_suppliers = ['cpu', 'network', 'memswap', 'disk']
+        self.active_suppliers = ['cpu', 'network', 'memswap', 'disk', 'temperature']
 
         for name in self.active_suppliers:
             self.suppliers[name].start()
@@ -120,6 +128,8 @@ class Indicator():
             self.LABEL_CPU.format(percentage)
         )
         self.indicator.set_label(self.LABEL_CPU.format(percentage), self.app)
+    def update_temp(self, percentage):
+        self.indicator_temp.set_label(self.LABEL_TEMP.format(percentage), self.temp)
 
     def update_memswap(self, mem_used, mem_total, swap_used, swap_total):
         self.menu_items['memory'].set_label(

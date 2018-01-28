@@ -1,0 +1,9 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Terminal=false
+Categories=GNOME;Utility;
+Name=Jindicator
+Comment=System Monitor Indicator
+Exec=cd ~/Workspace/jindicator/jindicator && python indicator.py
+Icon=syspeek
